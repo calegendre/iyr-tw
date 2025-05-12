@@ -1,11 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
+import sys
+from pathlib import Path
 
-from ..database import get_db
-from ..models import User
-from ..schemas import UserResponse, UserUpdate
-from ..utils.auth import get_current_active_user, is_admin
+# Add the parent directory to the path so we can import from the parent package
+backend_dir = Path(__file__).resolve().parent.parent
+sys.path.append(str(backend_dir))
+
+from database import get_db
+from models.models import User
+from schemas.schemas import UserResponse, UserUpdate
+from utils.auth import get_current_active_user, is_admin
 
 router = APIRouter()
 
