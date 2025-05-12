@@ -165,11 +165,21 @@ const Layout = ({ children }) => {
 // Home page component
 const Home = () => {
   const [message, setMessage] = useState("");
+  const { playTrack } = useContext(AudioPlayerContext);
+  const [featuredArtists, setFeaturedArtists] = useState([]);
+  const [latestPodcasts, setLatestPodcasts] = useState([]);
+  const [recentPosts, setRecentPosts] = useState([]);
 
   const fetchData = async () => {
     try {
       const response = await axios.get(`${API}/`);
       setMessage(response.data.message);
+      
+      // In a real application, we would fetch this data from the API
+      // For now, we'll use the mock data
+      setFeaturedArtists(mockArtists.slice(0, 4));
+      setLatestPodcasts(mockPodcasts.slice(0, 3));
+      setRecentPosts(mockBlogPosts.slice(0, 3));
     } catch (e) {
       console.error(e, `Error fetching data from API`);
     }
@@ -179,13 +189,20 @@ const Home = () => {
     fetchData();
   }, []);
 
+  const handlePlayTrack = (artistId) => {
+    const track = mockTracks.find(track => track.artistId === artistId);
+    if (track) {
+      playTrack(track);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <section className="mb-12">
         <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg p-8 shadow-xl">
           <h1 className="text-4xl font-bold mb-4">Welcome to itsyourradio</h1>
           <p className="text-xl mb-6">Your place for the best music and podcasts.</p>
-          <p>API Message: {message}</p>
+          <p className="mb-6">API Message: {message}</p>
           <div className="flex space-x-4">
             <Link
               to="/artists"
@@ -206,42 +223,56 @@ const Home = () => {
       <section className="mb-12">
         <h2 className="text-3xl font-bold mb-6">Featured Artists</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Artist cards will go here */}
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <div className="h-48 bg-gray-200 rounded-md mb-4"></div>
-            <h3 className="text-xl font-semibold">Artist Name</h3>
-            <p className="text-gray-600">Genre</p>
-          </div>
-          {/* Repeat for other featured artists */}
+          {featuredArtists.map(artist => (
+            <div key={artist.id} className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+              <div 
+                className="h-48 bg-gray-200 rounded-md mb-4 bg-cover bg-center cursor-pointer" 
+                style={{ backgroundImage: `url(${artist.image})` }}
+                onClick={() => handlePlayTrack(artist.id)}
+              >
+                <div className="flex justify-center items-center h-full bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity rounded-md">
+                  <div className="text-white text-xl">▶️ Play</div>
+                </div>
+              </div>
+              <h3 className="text-xl font-semibold">{artist.name}</h3>
+              <p className="text-gray-600">{artist.genre}</p>
+            </div>
+          ))}
         </div>
       </section>
 
       <section className="mb-12">
         <h2 className="text-3xl font-bold mb-6">Latest Podcasts</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Podcast cards will go here */}
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <div className="h-48 bg-gray-200 rounded-md mb-4"></div>
-            <h3 className="text-xl font-semibold">Podcast Title</h3>
-            <p className="text-gray-600">Host Name</p>
-            <p className="text-gray-500 text-sm mt-2">Latest Episode: Episode Title</p>
-          </div>
-          {/* Repeat for other latest podcasts */}
+          {latestPodcasts.map(podcast => (
+            <div key={podcast.id} className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+              <div 
+                className="h-48 bg-gray-200 rounded-md mb-4 bg-cover bg-center" 
+                style={{ backgroundImage: `url(${podcast.coverImage})` }}
+              ></div>
+              <h3 className="text-xl font-semibold">{podcast.title}</h3>
+              <p className="text-gray-600">{podcast.host}</p>
+              <p className="text-gray-500 text-sm mt-2">Latest Episode: {podcast.latestEpisode.title}</p>
+            </div>
+          ))}
         </div>
       </section>
 
       <section>
         <h2 className="text-3xl font-bold mb-6">Recent Blog Posts</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Blog post cards will go here */}
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <div className="h-48 bg-gray-200 rounded-md mb-4"></div>
-            <h3 className="text-xl font-semibold">Blog Post Title</h3>
-            <p className="text-gray-600">Author Name</p>
-            <p className="text-gray-500 text-sm mt-2">Published: Date</p>
-            <p className="mt-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
-          </div>
-          {/* Repeat for other recent blog posts */}
+          {recentPosts.map(post => (
+            <div key={post.id} className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+              <div 
+                className="h-48 bg-gray-200 rounded-md mb-4 bg-cover bg-center" 
+                style={{ backgroundImage: `url(${post.featuredImage})` }}
+              ></div>
+              <h3 className="text-xl font-semibold">{post.title}</h3>
+              <p className="text-gray-600">{post.author}</p>
+              <p className="text-gray-500 text-sm mt-2">Published: {post.publishedAt}</p>
+              <p className="mt-2">{post.excerpt}</p>
+            </div>
+          ))}
         </div>
       </section>
     </div>
