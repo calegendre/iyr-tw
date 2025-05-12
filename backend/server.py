@@ -1,75 +1,65 @@
 from fastapi import FastAPI, APIRouter
-from dotenv import load_dotenv
-from starlette.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
+from fastapi.middleware.cors import CORSMiddleware
 import os
-import logging
-from pathlib import Path
-from pydantic import BaseModel, Field
-from typing import List
-import uuid
-from datetime import datetime
+from dotenv import load_dotenv
 
+# Import database and initialization
+from .database import engine, Base, SessionLocal
+from .utils.db_init import init_db
 
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
+# Import routers
+from .routers import auth, users
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# Load environment variables
+load_dotenv()
 
-# Create the main app without a prefix
+# Initialize FastAPI app
 app = FastAPI()
 
-# Create a router with the /api prefix
-api_router = APIRouter(prefix="/api")
-
-
-# Define Models
-class StatusCheck(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
-
-class StatusCheckCreate(BaseModel):
-    client_name: str
-
-# Add your routes to the router instead of directly to app
-@api_router.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.dict()
-    status_obj = StatusCheck(**status_dict)
-    _ = await db.status_checks.insert_one(status_obj.dict())
-    return status_obj
-
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    status_checks = await db.status_checks.find().to_list(1000)
-    return [StatusCheck(**status_check) for status_check in status_checks]
-
-# Include the router in the main app
-app.include_router(api_router)
+# Set up CORS
+origins = [
+    "*",  # Allow all origins for development
+    # Add specific origins for production
+]
 
 app.add_middleware(
     CORSMiddleware,
+    allow_origins=origins,
     allow_credentials=True,
-    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+# Create API router
+api_router = APIRouter(prefix="/api")
 
+# Include other routers
+api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
+api_router.include_router(users.router, prefix="/users", tags=["users"])
+
+# Add API router to app
+app.include_router(api_router)
+
+# Root endpoint for API
+@app.get("/api/")
+async def root():
+    return {"message": "Welcome to itsyourradio API"}
+
+# Create tables on startup if they don't exist
+@app.on_event("startup")
+async def startup_db_client():
+    try:
+        # Create tables
+        Base.metadata.create_all(bind=engine)
+        print("Database tables created successfully!")
+        
+        # Initialize database with admin user
+        init_db()
+    except Exception as e:
+        print(f"Error initializing database: {e}")
+
+# Close database connection on shutdown
 @app.on_event("shutdown")
 async def shutdown_db_client():
-    client.close()
+    # No action needed for SQLAlchemy, connections are handled by the session
+    pass
