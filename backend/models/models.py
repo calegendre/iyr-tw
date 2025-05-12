@@ -3,8 +3,14 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 import uuid
 from datetime import datetime
+import sys
+from pathlib import Path
 
-from ..database import Base
+# Add the parent directory to the path so we can import from the parent package
+backend_dir = Path(__file__).resolve().parent.parent
+sys.path.append(str(backend_dir))
+
+from database import Base
 
 
 class User(Base):
