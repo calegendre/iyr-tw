@@ -41,21 +41,32 @@ This document provides detailed step-by-step instructions for deploying itsyourr
    pip3 install fastapi uvicorn motor pymongo python-jose[cryptography] passlib[bcrypt] python-multipart python-dotenv
    ```
 
-## Step 3: Upload Application Files
+## Step 3: Upload and Build Application Files
 
-### Option 1: Upload via SCP/SFTP
-1. Use SCP or an SFTP client like FileZilla to upload all files from the project to your server
-
-### Option 2: Clone from Git (if available)
-1. Clone the repository:
+### Option 1: Build and Deploy Manually
+1. Clone or download the project to your local machine
+2. Build the frontend:
    ```bash
-   git clone https://your-repository-url.git .
+   cd /path/to/project/frontend
+   npm install
+   npm run build
    ```
+3. Upload the following to your server:
+   - The entire `backend/` directory to `/home/username/web/yourdomain.com/public_html/backend/`
+   - The contents of the `frontend/build/` directory to `/home/username/web/yourdomain.com/public_html/`
 
-### Option 3: Manual Transfer
-1. Upload the following directories to public_html:
-   - backend/
-   - frontend/build/ (contents should go directly into public_html)
+### Option 2: Build Directly on Server
+1. Upload the entire project to your server
+2. Build the frontend on the server:
+   ```bash
+   cd /home/username/web/yourdomain.com/public_html/frontend
+   npm install
+   npm run build
+   ```
+3. Move the build files to the public_html directory:
+   ```bash
+   cp -r build/* ../ && cp -r build/.* ../
+   ```
 
 ## Step 4: Set Up the Backend
 
