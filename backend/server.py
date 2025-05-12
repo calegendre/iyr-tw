@@ -12,9 +12,9 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 # Import models
-from models.user import User, UserCreate, UserUpdate, UserAuth, UserResponse, Token, TokenData, UserRole
-from models.audio import Album, AlbumCreate, Song, SongCreate, PodcastShow, PodcastShowCreate, PodcastEpisode, PodcastEpisodeCreate
-from models.blog import BlogPost, BlogPostCreate, BlogPostUpdate, ArtistPost, ArtistPostCreate, ArtistPostUpdate
+from .models.user import User, UserCreate, UserUpdate, UserAuth, UserResponse, Token, TokenData, UserRole
+from .models.audio import Album, AlbumCreate, Song, SongCreate, PodcastShow, PodcastShowCreate, PodcastEpisode, PodcastEpisodeCreate
+from .models.blog import BlogPost, BlogPostCreate, BlogPostUpdate, ArtistPost, ArtistPostCreate, ArtistPostUpdate
 
 # Import utilities
 from utils.auth import verify_password, get_password_hash, create_access_token, get_current_user, get_user_role, has_role
