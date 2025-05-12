@@ -541,9 +541,9 @@ async def upload_podcast_cover(
 @api_router.post("/upload/music")
 async def upload_music(
     file: UploadFile = File(...),
-    artist_name: str = None,
-    album_name: str = None,
-    current_user = Depends(has_role([UserRole.ADMIN, UserRole.STAFF, UserRole.ARTIST]))
+    current_user = Depends(has_role([UserRole.ADMIN, UserRole.STAFF, UserRole.ARTIST])),
+    artist_name: Optional[str] = None,
+    album_name: Optional[str] = None
 ):
     """Upload music file for an artist."""
     # If no artist_name is provided, use the current user's username
