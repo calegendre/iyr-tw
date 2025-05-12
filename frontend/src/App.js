@@ -40,6 +40,7 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/artist-dashboard" element={<ArtistDashboard />} />
                 <Route path="/podcaster-dashboard" element={<PodcasterDashboard />} />
+                <Route path="/admin" element={<AdminDashboard />} />
               </Routes>
             </main>
             
