@@ -101,6 +101,13 @@ This document provides detailed step-by-step instructions for deploying itsyourr
    chmod -R 755 /home/username/web/yourdomain.com/public_html/station
    ```
 
+4. Initialize the database:
+   ```bash
+   cd /home/username/web/yourdomain.com/public_html/backend
+   python3 -c "from utils.db_init import init_db; init_db()"
+   ```
+   This will create all the necessary tables and the default admin account.
+
 ## Step 5: Set Up Supervisor for Backend Service
 
 1. Install supervisor if not already installed:
