@@ -62,7 +62,12 @@ input[type=range]::-moz-range-thumb {
 
 /* Provide space for the fixed player */
 main {
-  padding-bottom: 6rem;
+  padding-bottom: 8rem; /* Increased to accommodate footer + player */
+}
+
+/* Footer spacing to accommodate the player */
+footer {
+  margin-bottom: 4rem; /* Space for the fixed player */
 }
 
 /* Default page transitions */
