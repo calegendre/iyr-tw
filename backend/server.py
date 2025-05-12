@@ -27,17 +27,15 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 import uuid
 
+# Add the current directory to the Python path
 ROOT_DIR = Path(__file__).parent
 sys.path.append(str(ROOT_DIR))
+load_dotenv(ROOT_DIR / '.env')
 
-# Add the current directory to the Python path
 from models.user import User, UserCreate, UserUpdate, UserAuth, UserResponse, Token, TokenData, UserRole
 from models.audio import Album, AlbumCreate, Song, SongCreate, PodcastShow, PodcastShowCreate, PodcastEpisode, PodcastEpisodeCreate
 from models.blog import BlogPost, BlogPostCreate, BlogPostUpdate, ArtistPost, ArtistPostCreate, ArtistPostUpdate
 from utils.auth import verify_password, get_password_hash, create_access_token, get_current_user, get_user_role, has_role
-
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
