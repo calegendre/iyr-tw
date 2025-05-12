@@ -723,8 +723,8 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     """Initialize the application on startup."""
-    # Ensure default accounts exist
-    await ensure_default_accounts(db)
+    # Initialize the database tables if they don't exist
+    init_db()
 
 # Shutdown event
 @app.on_event("shutdown")
