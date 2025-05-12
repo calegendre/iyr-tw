@@ -226,7 +226,7 @@ python3 -m venv "$VENV_PATH" || handle_error "Failed to create virtual environme
 # Install Python dependencies in virtual environment
 echo -e "${YELLOW}Installing Python dependencies in virtual environment...${NC}"
 "$VENV_PATH/bin/pip" install --upgrade pip || warn "Failed to upgrade pip in virtual environment"
-"$VENV_PATH/bin/pip" install fastapi uvicorn sqlalchemy pymysql python-jose[cryptography] passlib[bcrypt] python-multipart python-dotenv || handle_error "Failed to install Python dependencies in virtual environment"
+"$VENV_PATH/bin/pip" install fastapi uvicorn sqlalchemy pymysql python-jose[cryptography] passlib[bcrypt] python-multipart python-dotenv email-validator pydantic[email] || handle_error "Failed to install Python dependencies in virtual environment"
 
 success_step "Virtual environment set up successfully"
 
