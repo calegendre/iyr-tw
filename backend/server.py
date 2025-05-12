@@ -2,13 +2,19 @@ from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 import os
 from dotenv import load_dotenv
+import sys
+from pathlib import Path
+
+# Add current directory to path
+current_dir = Path(__file__).resolve().parent
+sys.path.append(str(current_dir))
 
 # Import database and initialization
-from .database import engine, Base, SessionLocal
-from .utils.db_init import init_db
+from database import engine, Base, SessionLocal
+from utils.db_init import init_db
 
 # Import routers
-from .routers import auth, users
+from routers import auth, users
 
 # Load environment variables
 load_dotenv()
