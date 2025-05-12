@@ -16,7 +16,7 @@ const streamConfig = {
   streamFormat: "audio/mpeg",
   
   // Station details
-  stationName: "ItsYourRadio",
+  stationName: "itsyourradio",
   stationSlogan: "Your Music, Your Way",
   
   // Default artwork to display when no album art is available
