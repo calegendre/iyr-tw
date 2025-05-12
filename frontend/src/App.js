@@ -42,9 +42,26 @@ function App() {
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/artist-dashboard" element={<ArtistDashboard />} />
-                <Route path="/podcaster-dashboard" element={<PodcasterDashboard />} />
-                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/profile" element={
+                  <ProtectedRoute>
+                    <ProfilePage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/artist-dashboard" element={
+                  <ProtectedRoute requiredRoles={['artist', 'admin', 'staff']}>
+                    <ArtistDashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/podcaster-dashboard" element={
+                  <ProtectedRoute requiredRoles={['podcaster', 'admin', 'staff']}>
+                    <PodcasterDashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin" element={
+                  <ProtectedRoute requiredRoles={['admin', 'staff']}>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                } />
               </Routes>
             </main>
             
