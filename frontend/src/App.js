@@ -20,6 +20,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ArtistDashboard from "./pages/artist/ArtistDashboard";
 import PodcasterDashboard from "./pages/podcaster/PodcasterDashboard";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 function App() {
   return (
