@@ -26,7 +26,7 @@ const Layout = ({ children }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState(null);
   const [volume, setVolume] = useState(80);
-  const audioRef = useState(null);
+  const audioRef = useRef(null);
 
   const playTrack = (track) => {
     setCurrentTrack(track);
@@ -96,44 +96,12 @@ const Layout = ({ children }) => {
           </div>
         </header>
 
-        <main className="flex-grow">{children}</main>
+        <main className="flex-grow">
+          {children}
+        </main>
 
         {/* Persistent Audio Player */}
-        {currentTrack && (
-          <div className="fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-4">
-            <div className="container mx-auto flex items-center justify-between">
-              <div className="flex items-center">
-                {currentTrack.coverImage && (
-                  <img
-                    src={currentTrack.coverImage}
-                    alt={currentTrack.title}
-                    className="w-12 h-12 mr-4"
-                  />
-                )}
-                <div>
-                  <div className="font-semibold">{currentTrack.title}</div>
-                  <div className="text-sm text-gray-400">{currentTrack.artist}</div>
-                </div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={isPlaying ? pauseTrack : resumeTrack}
-                  className="p-2 rounded-full bg-white text-gray-800"
-                >
-                  {isPlaying ? "Pause" : "Play"}
-                </button>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={volume}
-                  onChange={(e) => setAudioVolume(parseInt(e.target.value))}
-                  className="w-32"
-                />
-              </div>
-            </div>
-          </div>
-        )}
+        <MediaPlayer />
 
         <footer className="bg-gray-900 text-white py-8">
           <div className="container mx-auto">
