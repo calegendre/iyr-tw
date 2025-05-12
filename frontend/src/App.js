@@ -12,6 +12,11 @@ import MediaPlayer from "./components/player/MediaPlayer";
 
 // Pages
 import Home from "./pages/Home";
+import Artists from "./pages/Artists";
+import Podcasts from "./pages/Podcasts";
+import Blog from "./pages/Blog";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 function App() {
   return (
@@ -24,7 +29,11 @@ function App() {
             <main className="flex-grow pt-16">
               <Routes>
                 <Route path="/" element={<Home />} />
-                {/* More routes will be added here */}
+                <Route path="/artists" element={<Artists />} />
+                <Route path="/podcasts" element={<Podcasts />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
               </Routes>
             </main>
             
@@ -35,5 +44,7 @@ function App() {
     </BrowserRouter>
   );
 }
+
+export default App;
 
 export default App;
