@@ -18,6 +18,8 @@ import Podcasts from "./pages/Podcasts";
 import Blog from "./pages/Blog";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ArtistDashboard from "./pages/artist/ArtistDashboard";
+import PodcasterDashboard from "./pages/podcaster/PodcasterDashboard";
 
 function App() {
   return (
