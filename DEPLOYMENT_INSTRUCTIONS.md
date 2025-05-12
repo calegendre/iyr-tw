@@ -43,7 +43,15 @@ This document provides detailed step-by-step instructions for deploying itsyourr
 
 ## Step 3: Upload and Build Application Files
 
-### Option 1: Build and Deploy Manually
+### Option 1: Use the Build Script (Recommended)
+1. Clone or download the project to your local machine
+2. Run the build script:
+   ```bash
+   ./build.sh
+   ```
+3. Upload all contents from the `deployment/` directory to your server's public_html folder
+
+### Option 2: Build and Deploy Manually
 1. Clone or download the project to your local machine
 2. Build the frontend:
    ```bash
@@ -55,7 +63,7 @@ This document provides detailed step-by-step instructions for deploying itsyourr
    - The entire `backend/` directory to `/home/username/web/yourdomain.com/public_html/backend/`
    - The contents of the `frontend/build/` directory to `/home/username/web/yourdomain.com/public_html/`
 
-### Option 2: Build Directly on Server
+### Option 3: Build Directly on Server
 1. Upload the entire project to your server
 2. Build the frontend on the server:
    ```bash
