@@ -1,17 +1,4 @@
-from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, File, UploadFile
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
-from motor.motor_asyncio import AsyncIOMotorClient
-import os
-import logging
-from pathlib import Path
-from typing import List, Optional
-from datetime import datetime, timedelta
-from jose import JWTError, jwt
-from passlib.context import CryptContext
-
-# Import models and utilities directly
+# Import all necessary libraries
 import sys
 from pathlib import Path
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, File, UploadFile
@@ -32,6 +19,7 @@ ROOT_DIR = Path(__file__).parent
 sys.path.append(str(ROOT_DIR))
 load_dotenv(ROOT_DIR / '.env')
 
+# Import models and utilities
 from models.user import User, UserCreate, UserUpdate, UserAuth, UserResponse, Token, TokenData, UserRole
 from models.audio import Album, AlbumCreate, Song, SongCreate, PodcastShow, PodcastShowCreate, PodcastEpisode, PodcastEpisodeCreate
 from models.blog import BlogPost, BlogPostCreate, BlogPostUpdate, ArtistPost, ArtistPostCreate, ArtistPostUpdate
