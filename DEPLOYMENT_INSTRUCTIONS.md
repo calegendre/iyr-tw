@@ -86,12 +86,12 @@ This document provides detailed step-by-step instructions for deploying itsyourr
 
 2. Add the following content to the .env file:
    ```
-   MONGO_URL=mongodb://localhost:27017/itsyourradio
-   DB_NAME=itsyourradio
+   DATABASE_URL=mysql+pymysql://username:password@localhost/itsyourradio_db
    SECRET_KEY=your-very-secure-secret-key-here
    WEBSITE_URL=https://yourdomain.com
    ```
-   Replace `your-very-secure-secret-key-here` with a randomly generated secure key.
+   Replace `username`, `password`, and `itsyourradio_db` with your MySQL credentials and database name. 
+   Also replace `your-very-secure-secret-key-here` with a randomly generated secure key.
 
 3. Create directories for media storage:
    ```bash
