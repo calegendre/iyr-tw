@@ -112,66 +112,66 @@ class RadioAPITester:
             200
         )
 
-def test_role_based_access(self, email, password, expected_role):
-    """Test login and role-based access for a specific role"""
-    print(f"\n===== Testing Role-Based Access for {expected_role} =====")
-    
-    # Login with the role-specific credentials
-    login_success = self.test_login(email, password)
-    if not login_success:
-        print(f"❌ Login failed for {email}")
-        return False
-    
-    # Get user profile to verify role
-    profile_success, profile_data = self.test_get_user_profile()
-    if not profile_success:
-        print(f"❌ Failed to get user profile for {email}")
-        return False
-    
-    # Verify the user has the expected role
-    actual_role = profile_data.get("role", "unknown")
-    if actual_role != expected_role:
-        print(f"❌ Role mismatch: expected {expected_role}, got {actual_role}")
-        return False
-    
-    print(f"✅ User has correct role: {actual_role}")
-    
-    # Test access to different dashboards
-    dashboards = [
-        {"endpoint": "admin/dashboard", "allowed_roles": ["admin", "staff"]},
-        {"endpoint": "artist/dashboard", "allowed_roles": ["admin", "staff", "artist"]},
-        {"endpoint": "podcaster/dashboard", "allowed_roles": ["admin", "staff", "podcaster"]}
-    ]
-    
-    for dashboard in dashboards:
-        endpoint = dashboard["endpoint"]
-        allowed = expected_role in dashboard["allowed_roles"]
-        expected_status = 200 if allowed else 403
+    def test_role_based_access(self, email, password, expected_role):
+        """Test login and role-based access for a specific role"""
+        print(f"\n===== Testing Role-Based Access for {expected_role} =====")
         
-        # Some endpoints might not exist but should still check auth
-        if not allowed:
-            print(f"Testing access to /{endpoint} (should be denied)")
-            success, _ = self.run_test(
-                f"Access to /{endpoint}",
-                "GET",
-                endpoint,
-                403
-            )
-            if not success:
-                print(f"❌ Access control failed for {expected_role} to /{endpoint}")
-        else:
-            print(f"Testing access to /{endpoint} (should be allowed)")
-            # For allowed roles, we accept either 200 (success) or 404 (endpoint doesn't exist)
-            # since we're testing auth, not the endpoint itself
-            response = requests.get(f"{self.api_url}/{endpoint}", 
-                                   headers={'Authorization': f'Bearer {self.token}'})
-            if response.status_code in [200, 404]:
-                print(f"✅ Access granted as expected for {expected_role} to /{endpoint}")
-                self.tests_passed += 1
+        # Login with the role-specific credentials
+        login_success = self.test_login(email, password)
+        if not login_success:
+            print(f"❌ Login failed for {email}")
+            return False
+        
+        # Get user profile to verify role
+        profile_success, profile_data = self.test_get_user_profile()
+        if not profile_success:
+            print(f"❌ Failed to get user profile for {email}")
+            return False
+        
+        # Verify the user has the expected role
+        actual_role = profile_data.get("role", "unknown")
+        if actual_role != expected_role:
+            print(f"❌ Role mismatch: expected {expected_role}, got {actual_role}")
+            return False
+        
+        print(f"✅ User has correct role: {actual_role}")
+        
+        # Test access to different dashboards
+        dashboards = [
+            {"endpoint": "admin/dashboard", "allowed_roles": ["admin", "staff"]},
+            {"endpoint": "artist/dashboard", "allowed_roles": ["admin", "staff", "artist"]},
+            {"endpoint": "podcaster/dashboard", "allowed_roles": ["admin", "staff", "podcaster"]}
+        ]
+        
+        for dashboard in dashboards:
+            endpoint = dashboard["endpoint"]
+            allowed = expected_role in dashboard["allowed_roles"]
+            expected_status = 200 if allowed else 403
+            
+            # Some endpoints might not exist but should still check auth
+            if not allowed:
+                print(f"Testing access to /{endpoint} (should be denied)")
+                success, _ = self.run_test(
+                    f"Access to /{endpoint}",
+                    "GET",
+                    endpoint,
+                    403
+                )
+                if not success:
+                    print(f"❌ Access control failed for {expected_role} to /{endpoint}")
             else:
-                print(f"❌ Expected access to be granted, got status {response.status_code}")
-    
-    return True
+                print(f"Testing access to /{endpoint} (should be allowed)")
+                # For allowed roles, we accept either 200 (success) or 404 (endpoint doesn't exist)
+                # since we're testing auth, not the endpoint itself
+                response = requests.get(f"{self.api_url}/{endpoint}", 
+                                       headers={'Authorization': f'Bearer {self.token}'})
+                if response.status_code in [200, 404]:
+                    print(f"✅ Access granted as expected for {expected_role} to /{endpoint}")
+                    self.tests_passed += 1
+                else:
+                    print(f"❌ Expected access to be granted, got status {response.status_code}")
+        
+        return True
 
 def main():
     # Setup
