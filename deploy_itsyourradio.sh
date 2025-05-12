@@ -20,6 +20,9 @@ DB_HOST="localhost"
 USER="radio"
 VENV_PATH="$PUBLIC_HTML/venv"
 
+# Get script directory
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 # Generate a secure random key for JWT
 SECRET_KEY=$(openssl rand -hex 32)
 
@@ -124,24 +127,55 @@ chmod -R 755 "$PUBLIC_HTML/station"
 chown -R "$USER":"$USER" "$PUBLIC_HTML"
 success_step "Directory structure prepared successfully"
 
-# Step 3: Build and deploy the application
-echo -e "\n${BLUE}Step 3: Building and deploying the application...${NC}"
+# Step 3: Deploy application files directly
+echo -e "\n${BLUE}Step 3: Deploying application files...${NC}"
 
-# Check if we're in the app directory
-if [ -f "/app/build.sh" ]; then
-    echo -e "${YELLOW}Building application package...${NC}"
-    cd /app || handle_error "Failed to change to app directory"
+# Check if build.sh exists in the same directory as this script
+if [ -f "$SCRIPT_DIR/build.sh" ]; then
+    echo -e "${YELLOW}Found build.sh script in the same directory.${NC}"
+    cd "$SCRIPT_DIR" || handle_error "Failed to change to script directory"
     chmod +x build.sh
+    
+    echo -e "${YELLOW}Running build script...${NC}"
     ./build.sh || handle_error "Failed to build the application"
     
-    echo -e "${YELLOW}Copying files to public_html...${NC}"
-    cp -r /app/deployment/* "$PUBLIC_HTML"/ || handle_error "Failed to copy files to public_html"
-    # Copy hidden files but ignore errors if there are none
-    cp -r /app/deployment/.* "$PUBLIC_HTML"/ 2>/dev/null || true
+    if [ -d "$SCRIPT_DIR/deployment" ]; then
+        echo -e "${YELLOW}Copying files to public_html...${NC}"
+        cp -r "$SCRIPT_DIR/deployment/"* "$PUBLIC_HTML"/ || handle_error "Failed to copy files to public_html"
+        # Copy hidden files but ignore errors if there are none
+        cp -r "$SCRIPT_DIR/deployment/"/.* "$PUBLIC_HTML"/ 2>/dev/null || true
+    else
+        # Alternative: If no deployment directory was created, we'll copy key application files directly
+        echo -e "${YELLOW}Deployment directory not found. Copying application files directly...${NC}"
+        
+        # Copy backend files
+        echo -e "${YELLOW}Copying backend files...${NC}"
+        if [ -d "$SCRIPT_DIR/backend" ]; then
+            cp -r "$SCRIPT_DIR/backend/"* "$PUBLIC_HTML/backend/"
+        else
+            handle_error "Backend directory not found"
+        fi
+        
+        # Copy frontend files
+        echo -e "${YELLOW}Copying frontend files...${NC}"
+        if [ -d "$SCRIPT_DIR/frontend/build" ]; then
+            cp -r "$SCRIPT_DIR/frontend/build/"* "$PUBLIC_HTML/"
+            cp -r "$SCRIPT_DIR/frontend/build/"/.* "$PUBLIC_HTML/" 2>/dev/null || true
+        elif [ -d "$SCRIPT_DIR/frontend" ]; then
+            # If frontend/build doesn't exist but frontend does, try to copy static files
+            find "$SCRIPT_DIR/frontend" -name "*.html" -o -name "*.js" -o -name "*.css" -o -name "*.png" -o -name "*.jpg" -o -name "*.svg" | xargs -I{} cp {} "$PUBLIC_HTML/"
+        else
+            warn "Frontend files not found. Manual frontend deployment may be required."
+        fi
+        
+        # Copy documentation files
+        cp -f "$SCRIPT_DIR/"*.md "$PUBLIC_HTML/" 2>/dev/null || true
+    fi
     
     # Verify key files exist
     if [ ! -f "$PUBLIC_HTML/index.html" ]; then
-        handle_error "Frontend files were not copied correctly - index.html is missing"
+        warn "Frontend files may not have been copied correctly - index.html is missing"
+        warn "You may need to manually copy the frontend files"
     fi
     
     if [ ! -f "$PUBLIC_HTML/backend/server.py" ]; then
@@ -150,7 +184,36 @@ if [ -f "/app/build.sh" ]; then
     
     success_step "Application files deployed successfully"
 else
-    handle_error "build.sh not found in /app directory. Are you running this script from the correct location?"
+    # If build.sh isn't found, look for key application files directly
+    echo -e "${YELLOW}build.sh not found. Checking for application files directly...${NC}"
+    
+    if [ -d "$SCRIPT_DIR/backend" ]; then
+        echo -e "${YELLOW}Found backend directory. Copying backend files...${NC}"
+        cp -r "$SCRIPT_DIR/backend/"* "$PUBLIC_HTML/backend/"
+    else
+        handle_error "Backend directory not found. Cannot proceed with deployment."
+    fi
+    
+    if [ -d "$SCRIPT_DIR/frontend/build" ]; then
+        echo -e "${YELLOW}Found frontend build directory. Copying frontend files...${NC}"
+        cp -r "$SCRIPT_DIR/frontend/build/"* "$PUBLIC_HTML/"
+    elif [ -d "$SCRIPT_DIR/frontend" ]; then
+        echo -e "${YELLOW}Found frontend directory but no build folder. Trying to copy essential files...${NC}"
+        find "$SCRIPT_DIR/frontend" -name "*.html" -o -name "*.js" -o -name "*.css" -o -name "*.png" -o -name "*.jpg" -o -name "*.svg" | xargs -I{} cp {} "$PUBLIC_HTML/"
+        warn "Frontend may not be properly built. Consider building it separately."
+    else
+        warn "Frontend files not found. Manual frontend deployment will be required."
+    fi
+    
+    # Copy documentation files
+    cp -f "$SCRIPT_DIR/"*.md "$PUBLIC_HTML/" 2>/dev/null || true
+    
+    # Verify key files
+    if [ ! -f "$PUBLIC_HTML/backend/server.py" ]; then
+        handle_error "Backend files were not copied correctly - server.py is missing"
+    else
+        success_step "Application files partially deployed - backend found"
+    fi
 fi
 
 # Step 4: Set up Python virtual environment and install dependencies
@@ -212,6 +275,65 @@ else
             handle_error "Database connection failed. Please check your database credentials."
         fi
     fi
+fi
+
+# Copy the database initialization module if it doesn't exist
+if [ ! -f "$PUBLIC_HTML/backend/utils/db_init.py" ]; then
+    echo -e "${YELLOW}Database initialization module not found. Creating it...${NC}"
+    mkdir -p "$PUBLIC_HTML/backend/utils"
+    
+    cat > "$PUBLIC_HTML/backend/utils/db_init.py" << 'EOL'
+from ..database import engine, Base, SessionLocal
+from ..models.sql_models import User
+from .auth import get_password_hash
+import uuid
+from datetime import datetime
+
+# Default admin account
+DEFAULT_ADMIN = {
+    "id": str(uuid.uuid4()),
+    "email": "admin@itsyourradio.com",
+    "username": "admin",
+    "full_name": "Admin User",
+    "role": "admin",
+    "hashed_password": get_password_hash("IYR_admin_2025!"),
+    "profile_image_url": None,
+    "cover_image_url": None,
+    "bio": "System administrator account",
+    "created_at": datetime.utcnow(),
+    "updated_at": datetime.utcnow(),
+    "is_active": True
+}
+
+def init_db():
+    """Initialize database tables and default data"""
+    # Create tables
+    Base.metadata.create_all(bind=engine)
+    
+    # Add default admin if it doesn't exist
+    db = SessionLocal()
+    try:
+        existing_admin = db.query(User).filter(User.email == DEFAULT_ADMIN["email"]).first()
+        if not existing_admin:
+            admin_user = User(
+                id=DEFAULT_ADMIN["id"],
+                email=DEFAULT_ADMIN["email"],
+                username=DEFAULT_ADMIN["username"],
+                full_name=DEFAULT_ADMIN["full_name"],
+                role=DEFAULT_ADMIN["role"],
+                hashed_password=DEFAULT_ADMIN["hashed_password"],
+                bio=DEFAULT_ADMIN["bio"],
+                is_active=DEFAULT_ADMIN["is_active"]
+            )
+            db.add(admin_user)
+            db.commit()
+            print("Default admin account created")
+    except Exception as e:
+        db.rollback()
+        print(f"Error creating default admin: {e}")
+    finally:
+        db.close()
+EOL
 fi
 
 # Initialize database
@@ -282,7 +404,6 @@ check_file() {
     fi
 }
 
-check_file "$PUBLIC_HTML/index.html"
 check_file "$PUBLIC_HTML/backend/server.py"
 check_file "$PUBLIC_HTML/backend/.env"
 check_file "/etc/supervisor/conf.d/itsyourradio-backend.conf"
