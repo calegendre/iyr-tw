@@ -18,6 +18,7 @@ DB_USER="radio_iyruser25"
 DB_PASSWORD="l6Sui@BGY{Kzg7qu"
 DB_HOST="localhost"
 USER="radio"
+VENV_PATH="$PUBLIC_HTML/venv"
 
 # Generate a secure random key for JWT
 SECRET_KEY=$(openssl rand -hex 32)
@@ -75,16 +76,17 @@ check_install_package() {
 # Update package lists
 apt-get update || handle_error "Failed to update package lists"
 
-# Check for Python and pip
+# Check for required system packages
 check_install_package python3 python3
 check_install_package pip3 python3-pip
 check_install_package supervisorctl supervisor
 check_install_package openssl openssl
+check_install_package venv python3-venv
 
-# Install required Python packages
-echo -e "${YELLOW}Installing Python dependencies...${NC}"
-pip3 install fastapi uvicorn sqlalchemy pymysql python-jose[cryptography] passlib[bcrypt] python-multipart python-dotenv || handle_error "Failed to install Python dependencies"
-success_step "All prerequisites installed successfully"
+# Install additional required packages
+apt-get install -y python3-full || warn "Failed to install python3-full package. Virtual environment may not work correctly."
+
+success_step "All system prerequisites installed successfully"
 
 # Step 2: Verify and prepare directory structure
 echo -e "\n${BLUE}Step 2: Preparing directory structure...${NC}"
@@ -151,8 +153,22 @@ else
     handle_error "build.sh not found in /app directory. Are you running this script from the correct location?"
 fi
 
-# Step 4: Configure the environment
-echo -e "\n${BLUE}Step 4: Configuring the environment...${NC}"
+# Step 4: Set up Python virtual environment and install dependencies
+echo -e "\n${BLUE}Step 4: Setting up Python virtual environment...${NC}"
+
+# Create virtual environment
+echo -e "${YELLOW}Creating Python virtual environment...${NC}"
+python3 -m venv "$VENV_PATH" || handle_error "Failed to create virtual environment"
+
+# Install Python dependencies in virtual environment
+echo -e "${YELLOW}Installing Python dependencies in virtual environment...${NC}"
+"$VENV_PATH/bin/pip" install --upgrade pip || warn "Failed to upgrade pip in virtual environment"
+"$VENV_PATH/bin/pip" install fastapi uvicorn sqlalchemy pymysql python-jose[cryptography] passlib[bcrypt] python-multipart python-dotenv || handle_error "Failed to install Python dependencies in virtual environment"
+
+success_step "Virtual environment set up successfully"
+
+# Step 5: Configure the environment
+echo -e "\n${BLUE}Step 5: Configuring the environment...${NC}"
 
 # Create .env file for backend
 echo -e "${YELLOW}Creating backend environment file...${NC}"
@@ -177,8 +193,8 @@ fi
 
 success_step "Environment configured successfully"
 
-# Step 5: Set up database and initialize application
-echo -e "\n${BLUE}Step 5: Setting up database...${NC}"
+# Step 6: Set up database and initialize application
+echo -e "\n${BLUE}Step 6: Setting up database...${NC}"
 
 # Check if MySQL/MariaDB is installed
 if ! command -v mysql &> /dev/null; then
@@ -201,17 +217,17 @@ fi
 # Initialize database
 echo -e "${YELLOW}Initializing database...${NC}"
 cd "$PUBLIC_HTML/backend" || handle_error "Failed to change to backend directory"
-python3 -c "from utils.db_init import init_db; init_db()" || handle_error "Failed to initialize database"
+"$VENV_PATH/bin/python" -c "from utils.db_init import init_db; init_db()" || handle_error "Failed to initialize database"
 success_step "Database initialized successfully"
 
-# Step 6: Set up supervisor for the backend service
-echo -e "\n${BLUE}Step 6: Setting up supervisor...${NC}"
+# Step 7: Set up supervisor for the backend service
+echo -e "\n${BLUE}Step 7: Setting up supervisor...${NC}"
 
 echo -e "${YELLOW}Creating supervisor configuration...${NC}"
 cat > /etc/supervisor/conf.d/itsyourradio-backend.conf << EOL
 [program:itsyourradio-backend]
 directory=$PUBLIC_HTML/backend
-command=uvicorn server:app --host 0.0.0.0 --port 8001
+command=$VENV_PATH/bin/uvicorn server:app --host 0.0.0.0 --port 8001
 autostart=true
 autorestart=true
 user=$USER
@@ -226,8 +242,8 @@ supervisorctl update || handle_error "Failed to update supervisor"
 supervisorctl restart itsyourradio-backend || warn "Failed to restart backend service. It might be started later."
 success_step "Supervisor configured successfully"
 
-# Step 7: Configure proxy for HestiaCP
-echo -e "\n${BLUE}Step 7: Configuring proxy for HestiaCP...${NC}"
+# Step 8: Configure proxy for HestiaCP
+echo -e "\n${BLUE}Step 8: Configuring proxy for HestiaCP...${NC}"
 
 # Create proxy template file
 echo -e "${YELLOW}Creating proxy template for backend API...${NC}"
@@ -250,8 +266,8 @@ else
     warn "v-restart-web command not found. You may need to restart the web server manually."
 fi
 
-# Step 8: Verify installation
-echo -e "\n${BLUE}Step 8: Verifying installation...${NC}"
+# Step 9: Verify installation
+echo -e "\n${BLUE}Step 9: Verifying installation...${NC}"
 
 # Check if key files exist
 echo -e "${YELLOW}Checking key files...${NC}"
@@ -270,6 +286,8 @@ check_file "$PUBLIC_HTML/index.html"
 check_file "$PUBLIC_HTML/backend/server.py"
 check_file "$PUBLIC_HTML/backend/.env"
 check_file "/etc/supervisor/conf.d/itsyourradio-backend.conf"
+check_file "$VENV_PATH/bin/python"
+check_file "$VENV_PATH/bin/uvicorn"
 
 if $missing_files; then
     warn "Some files are missing. The installation might not work correctly."
@@ -285,6 +303,10 @@ else
     warn "Backend API is not responding. You might need to troubleshoot the service."
     warn "Check the supervisor logs at: $PUBLIC_HTML/logs/supervisor.log"
 fi
+
+# Fix ownership of all files
+echo -e "${YELLOW}Setting proper ownership for all files...${NC}"
+chown -R "$USER":"$USER" "$PUBLIC_HTML"
 
 # Final message
 echo -e "\n${GREEN}=======================================================${NC}"
@@ -312,3 +334,7 @@ echo -e "Backend logs: ${YELLOW}$PUBLIC_HTML/logs/supervisor.log${NC}"
 echo
 echo -e "${GREEN}For more details, refer to DEPLOYMENT_INSTRUCTIONS.md${NC}"
 echo -e "${GREEN}in the $PUBLIC_HTML directory.${NC}"
+echo
+echo -e "${BLUE}Python Virtual Environment:${NC}"
+echo -e "The application is using a Python virtual environment at: ${YELLOW}$VENV_PATH${NC}"
+echo -e "If you need to run Python commands manually, use: ${YELLOW}$VENV_PATH/bin/python${NC}"
