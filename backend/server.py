@@ -662,10 +662,43 @@ async def get_podcast_rss_feed(show_id: str):
     
     return {"rss": rss}
 
-# Base route
-@api_router.get("/")
-async def root():
-    return {"message": "Welcome to ItsYourRadio API"}
+# --------------------------------
+# Health & Status Routes
+# --------------------------------
+@api_router.get("/health")
+async def health_check():
+    """Check if the API is healthy."""
+    return {
+        "status": "healthy",
+        "timestamp": datetime.utcnow().isoformat(),
+        "version": "1.0.0"
+    }
+
+@api_router.get("/stream/info")
+async def stream_info():
+    """Get information about the radio stream."""
+    return {
+        "station_name": "ItsYourRadio",
+        "stream_url": "https://example.com:8000/stream",
+        "bitrate": "128kbps",
+        "format": "audio/mpeg",
+        "description": "Your Music, Your Way",
+        "status": "online",
+        "listeners": 42
+    }
+
+@api_router.get("/stream/now-playing")
+async def now_playing():
+    """Get information about what's currently playing on the radio."""
+    return {
+        "title": "Summer Vibes",
+        "artist": "DJ Cool",
+        "album": "Beach Party Mix",
+        "cover_art": "https://example.com/covers/summer-vibes.jpg",
+        "started_at": (datetime.utcnow() - timedelta(minutes=2)).isoformat(),
+        "duration": 240,  # in seconds
+        "progress": 120  # in seconds
+    }
 
 # Include the router in the main app
 app.include_router(api_router)
