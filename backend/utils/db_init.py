@@ -1,6 +1,16 @@
-from ..database import engine, Base, SessionLocal
-from ..models import User
-from ..utils.auth import get_password_hash
+# Direct import without relative imports to avoid ImportError
+import sys
+import os
+from pathlib import Path
+
+# Add the parent directory to the path so we can import from the parent package
+# This is needed because this file might be run directly
+backend_dir = Path(__file__).resolve().parent.parent
+sys.path.append(str(backend_dir))
+
+from database import engine, Base, SessionLocal
+from models.models import User
+from utils.auth import get_password_hash
 import uuid
 
 def init_db():
@@ -33,3 +43,7 @@ def init_db():
     db.close()
     
     return "Database initialized successfully!"
+
+if __name__ == "__main__":
+    # This allows running the script directly to initialize the database
+    init_db()
