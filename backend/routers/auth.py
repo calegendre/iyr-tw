@@ -3,6 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import timedelta
 from typing import List
+import os
 
 from ..database import get_db
 from ..models import User
@@ -18,6 +19,15 @@ router = APIRouter()
 
 @router.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    # For testing in development environment without MySQL
+    if os.environ.get("ENVIRONMENT") == "development" and form_data.username == "admin@itsyourradio.com" and form_data.password == "IYR_admin_2025!":
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            data={"sub": form_data.username}, expires_delta=access_token_expires
+        )
+        return {"access_token": access_token, "token_type": "bearer"}
+    
+    # Normal authentication with database
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
