@@ -38,7 +38,7 @@ This document provides detailed step-by-step instructions for deploying itsyourr
 
 4. Install required Python packages:
    ```bash
-   pip3 install fastapi uvicorn sqlalchemy pymysql python-jose[cryptography] passlib[bcrypt] python-multipart python-dotenv
+   pip3 install fastapi uvicorn sqlalchemy pymysql python-jose[cryptography] passlib[bcrypt] python-multipart python-dotenv email-validator pydantic[email]
    ```
 
 ## Step 3: Upload and Build Application Files
