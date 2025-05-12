@@ -683,7 +683,7 @@ async def health_check():
 async def stream_info():
     """Get information about the radio stream."""
     return {
-        "station_name": "ItsYourRadio",
+        "station_name": "itsyourradio",
         "stream_url": "https://example.com:8000/stream",
         "bitrate": "128kbps",
         "format": "audio/mpeg",
