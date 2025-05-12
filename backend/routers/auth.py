@@ -4,11 +4,17 @@ from sqlalchemy.orm import Session
 from datetime import timedelta
 from typing import List
 import os
+import sys
+from pathlib import Path
 
-from ..database import get_db
-from ..models import User
-from ..schemas import UserCreate, UserResponse, Token
-from ..utils.auth import (
+# Add the parent directory to the path so we can import from the parent package
+backend_dir = Path(__file__).resolve().parent.parent
+sys.path.append(str(backend_dir))
+
+from database import get_db
+from models.models import User
+from schemas.schemas import UserCreate, UserResponse, Token
+from utils.auth import (
     authenticate_user,
     create_access_token,
     get_password_hash,
