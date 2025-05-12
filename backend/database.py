@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
 import pymysql
+import urllib.parse
 
 # Load environment variables
 load_dotenv()
@@ -14,8 +15,11 @@ DB_PASSWORD = os.environ.get("DB_PASSWORD", "l6Sui@BGY{Kzg7qu")
 DB_HOST = os.environ.get("DB_HOST", "localhost")
 DB_NAME = os.environ.get("DB_NAME", "radio_itsyourradio25")
 
+# URL encode the password to handle special characters
+encoded_password = urllib.parse.quote_plus(DB_PASSWORD)
+
 # Create MySQL connection string
-SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
+SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{DB_USER}:{encoded_password}@{DB_HOST}/{DB_NAME}"
 
 # Create engine
 engine = create_engine(
