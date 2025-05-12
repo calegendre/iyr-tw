@@ -1,4 +1,5 @@
-from .auth import (
+# Import utility functions
+from utils.auth import (
     verify_password,
     get_password_hash,
     authenticate_user,
@@ -9,4 +10,4 @@ from .auth import (
     is_staff_or_admin
 )
 
-from .db_init import init_db
+from utils.db_init import init_db
