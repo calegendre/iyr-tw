@@ -279,22 +279,96 @@ const Home = () => {
   );
 };
 
-// Artists page (placeholder)
+// Artists page (with data)
 const Artists = () => {
+  const { playTrack } = useContext(AudioPlayerContext);
+  const [artists, setArtists] = useState([]);
+
+  useEffect(() => {
+    // In a real application, we would fetch this data from the API
+    // For now, we'll use the mock data
+    setArtists(mockArtists);
+  }, []);
+
+  const handlePlayTrack = (artistId) => {
+    const track = mockTracks.find(track => track.artistId === artistId);
+    if (track) {
+      playTrack(track);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Artists</h1>
-      <p>This page will list all artists.</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {artists.map(artist => (
+          <div key={artist.id} className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+            <div 
+              className="h-64 bg-gray-200 rounded-md mb-4 bg-cover bg-center cursor-pointer" 
+              style={{ backgroundImage: `url(${artist.image})` }}
+              onClick={() => handlePlayTrack(artist.id)}
+            >
+              <div className="flex justify-center items-center h-full bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity rounded-md">
+                <div className="text-white text-xl">▶️ Play</div>
+              </div>
+            </div>
+            <h3 className="text-xl font-semibold">{artist.name}</h3>
+            <p className="text-gray-600">{artist.genre}</p>
+            <p className="mt-2 text-gray-700">{artist.bio}</p>
+            <div className="mt-4">
+              <Link 
+                to={`/artists/${artist.id}`} 
+                className="text-purple-600 hover:text-purple-800 font-medium"
+              >
+                View Profile
+              </Link>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
-// Podcasts page (placeholder)
+// Podcasts page (with data)
 const Podcasts = () => {
+  const [podcasts, setPodcasts] = useState([]);
+
+  useEffect(() => {
+    // In a real application, we would fetch this data from the API
+    // For now, we'll use the mock data
+    setPodcasts(mockPodcasts);
+  }, []);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Podcasts</h1>
-      <p>This page will list all podcasts.</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {podcasts.map(podcast => (
+          <div key={podcast.id} className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+            <div 
+              className="h-64 bg-gray-200 rounded-md mb-4 bg-cover bg-center" 
+              style={{ backgroundImage: `url(${podcast.coverImage})` }}
+            ></div>
+            <h3 className="text-xl font-semibold">{podcast.title}</h3>
+            <p className="text-gray-600">Host: {podcast.host}</p>
+            <p className="mt-2 text-gray-700">{podcast.description}</p>
+            <div className="mt-4 p-3 bg-gray-100 rounded-md">
+              <p className="font-medium">Latest Episode:</p>
+              <p className="text-gray-700">{podcast.latestEpisode.title}</p>
+              <p className="text-gray-500 text-sm">Released: {podcast.latestEpisode.publishedAt}</p>
+            </div>
+            <div className="mt-4">
+              <Link 
+                to={`/podcasts/${podcast.id}`} 
+                className="text-purple-600 hover:text-purple-800 font-medium"
+              >
+                Listen Now
+              </Link>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
