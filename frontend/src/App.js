@@ -21,6 +21,10 @@ import Register from "./pages/Register";
 import ArtistDashboard from "./pages/artist/ArtistDashboard";
 import PodcasterDashboard from "./pages/podcaster/PodcasterDashboard";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import ProfilePage from "./pages/profile/ProfilePage";
+
+// Auth Components
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 function App() {
   return (
