@@ -572,8 +572,8 @@ async def upload_music(
 @api_router.post("/upload/podcast")
 async def upload_podcast(
     file: UploadFile = File(...),
-    show_name: str,
-    current_user = Depends(has_role([UserRole.ADMIN, UserRole.STAFF, UserRole.PODCASTER]))
+    current_user = Depends(has_role([UserRole.ADMIN, UserRole.STAFF, UserRole.PODCASTER])),
+    show_name: str = None
 ):
     """Upload podcast episode file."""
     # Create directory structure if it doesn't exist
