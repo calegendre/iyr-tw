@@ -37,6 +37,8 @@ function App() {
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/artist-dashboard" element={<ArtistDashboard />} />
+                <Route path="/podcaster-dashboard" element={<PodcasterDashboard />} />
               </Routes>
             </main>
             
