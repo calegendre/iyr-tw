@@ -17,7 +17,7 @@ from .models.audio import Album, AlbumCreate, Song, SongCreate, PodcastShow, Pod
 from .models.blog import BlogPost, BlogPostCreate, BlogPostUpdate, ArtistPost, ArtistPostCreate, ArtistPostUpdate
 
 # Import utilities
-from utils.auth import verify_password, get_password_hash, create_access_token, get_current_user, get_user_role, has_role
+from .utils.auth import verify_password, get_password_hash, create_access_token, get_current_user, get_user_role, has_role
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
