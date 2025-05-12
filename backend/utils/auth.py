@@ -7,7 +7,14 @@ from typing import Optional
 import os
 from dotenv import load_dotenv
 from pathlib import Path
-from ..models import TokenData, UserRole
+import sys
+
+# Add the current directory to the Python path to allow imports
+ROOT_DIR = Path(__file__).parent.parent
+sys.path.append(str(ROOT_DIR))
+
+# Now import from models
+from models.user import TokenData, UserRole
 
 # Load environment variables
 ROOT_DIR = Path(__file__).parent.parent
