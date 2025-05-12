@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 import uuid
+from utils.db_init import init_db
 
 # Add the current directory to the Python path
 ROOT_DIR = Path(__file__).parent
