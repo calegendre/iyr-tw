@@ -46,7 +46,7 @@ const Header = () => {
           <span className={`ml-2 text-white font-bold transition-all duration-300 ${
             scrolled ? 'text-xl' : 'text-2xl'
           }`}>
-            ItsYourRadio
+            itsyourradio
           </span>
         </Link>
 
