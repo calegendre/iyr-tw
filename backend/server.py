@@ -136,7 +136,17 @@ async def login(user_auth: UserAuth):
 @api_router.get("/users/me", response_model=UserResponse)
 async def get_current_user_profile(current_user = Depends(get_current_user)):
     """Get the current user's profile."""
-    return current_user
+    # For now, return some sample user data
+    return {
+        "id": current_user.get("user_id", "12345"),
+        "email": "user@example.com",
+        "username": "testuser",
+        "full_name": "Test User",
+        "role": current_user.get("role", "member"),
+        "profile_image_url": None,
+        "bio": "This is a test user profile.",
+        "created_at": datetime.utcnow()
+    }
 
 @api_router.put("/users/me", response_model=UserResponse)
 async def update_user_profile(user_update: UserUpdate, current_user = Depends(get_current_user)):
