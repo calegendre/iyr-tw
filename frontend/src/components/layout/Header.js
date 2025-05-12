@@ -127,44 +127,44 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-black/95 border-t border-gray-800">
+        <div className="md:hidden bg-black/95 border-t border-gray-800 absolute top-full left-0 right-0 shadow-lg z-20">
           <ul className="py-2 px-4 space-y-2">
             <li>
-              <Link to="/" className="block text-white py-2">Home</Link>
+              <Link to="/" className="block text-white py-3 px-2 hover:bg-gray-800 rounded-md">Home</Link>
             </li>
             <li>
-              <Link to="/artists" className="block text-white py-2">Artists</Link>
+              <Link to="/artists" className="block text-white py-3 px-2 hover:bg-gray-800 rounded-md">Artists</Link>
             </li>
             <li>
-              <Link to="/podcasts" className="block text-white py-2">Podcasts</Link>
+              <Link to="/podcasts" className="block text-white py-3 px-2 hover:bg-gray-800 rounded-md">Podcasts</Link>
             </li>
             <li>
-              <Link to="/blog" className="block text-white py-2">Blog</Link>
+              <Link to="/blog" className="block text-white py-3 px-2 hover:bg-gray-800 rounded-md">Blog</Link>
             </li>
             {user ? (
               <>
                 <li>
-                  <Link to="/profile" className="block text-white py-2">Profile</Link>
+                  <Link to="/profile" className="block text-white py-3 px-2 hover:bg-gray-800 rounded-md">Profile</Link>
                 </li>
                 {(user.role === 'admin' || user.role === 'staff') && (
                   <li>
-                    <Link to="/admin" className="block text-white py-2">Admin</Link>
+                    <Link to="/admin" className="block text-white py-3 px-2 hover:bg-gray-800 rounded-md">Admin</Link>
                   </li>
                 )}
                 {(user.role === 'artist') && (
                   <li>
-                    <Link to="/artist-dashboard" className="block text-white py-2">Artist Dashboard</Link>
+                    <Link to="/artist-dashboard" className="block text-white py-3 px-2 hover:bg-gray-800 rounded-md">Artist Dashboard</Link>
                   </li>
                 )}
                 {(user.role === 'podcaster') && (
                   <li>
-                    <Link to="/podcaster-dashboard" className="block text-white py-2">Podcaster Dashboard</Link>
+                    <Link to="/podcaster-dashboard" className="block text-white py-3 px-2 hover:bg-gray-800 rounded-md">Podcaster Dashboard</Link>
                   </li>
                 )}
                 <li>
                   <button 
                     onClick={logout} 
-                    className="block text-white py-2 w-full text-left"
+                    className="block text-white py-3 px-2 hover:bg-gray-800 rounded-md w-full text-left"
                   >
                     Logout
                   </button>
@@ -173,10 +173,10 @@ const Header = () => {
             ) : (
               <>
                 <li>
-                  <Link to="/login" className="block text-white py-2">Login</Link>
+                  <Link to="/login" className="block text-white py-3 px-2 hover:bg-gray-800 rounded-md">Login</Link>
                 </li>
                 <li>
-                  <Link to="/register" className="block text-white py-2 bg-purple-600 px-4 rounded-md">Sign Up</Link>
+                  <Link to="/register" className="block text-white py-3 px-2 bg-purple-600 hover:bg-purple-700 rounded-md my-2">Sign Up</Link>
                 </li>
               </>
             )}
