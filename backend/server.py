@@ -662,6 +662,11 @@ async def get_podcast_rss_feed(show_id: str):
     
     return {"rss": rss}
 
+# Base route
+@api_router.get("/")
+async def root():
+    return {"message": "Welcome to ItsYourRadio API"}
+
 # --------------------------------
 # Health & Status Routes
 # --------------------------------
