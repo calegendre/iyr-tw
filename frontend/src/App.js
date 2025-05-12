@@ -373,12 +373,42 @@ const Podcasts = () => {
   );
 };
 
-// Blog page (placeholder)
+// Blog page (with data)
 const Blog = () => {
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    // In a real application, we would fetch this data from the API
+    // For now, we'll use the mock data
+    setPosts(mockBlogPosts);
+  }, []);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Blog</h1>
-      <p>This page will list all blog posts.</p>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {posts.map(post => (
+          <div key={post.id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+            <div 
+              className="h-64 bg-gray-200 rounded-md mb-4 bg-cover bg-center" 
+              style={{ backgroundImage: `url(${post.featuredImage})` }}
+            ></div>
+            <h2 className="text-2xl font-bold mb-2">{post.title}</h2>
+            <div className="flex items-center text-gray-600 mb-4">
+              <span>{post.author}</span>
+              <span className="mx-2">•</span>
+              <span>{post.publishedAt}</span>
+            </div>
+            <p className="text-gray-700 mb-4">{post.excerpt}</p>
+            <Link 
+              to={`/blog/${post.id}`} 
+              className="inline-block bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors"
+            >
+              Read More
+            </Link>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
@@ -449,7 +479,7 @@ function App() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
   }
 
   return (
