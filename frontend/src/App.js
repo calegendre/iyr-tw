@@ -38,6 +38,7 @@ function App() {
               </Routes>
             </main>
             
+            <Footer />
             <MediaPlayer />
           </div>
         </MediaPlayerProvider>
