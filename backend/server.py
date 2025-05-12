@@ -718,6 +718,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Startup event
+@app.on_event("startup")
+async def startup_event():
+    """Initialize the application on startup."""
+    # Ensure default accounts exist
+    await ensure_default_accounts(db)
+
 # Shutdown event
 @app.on_event("shutdown")
 async def shutdown_db_client():
