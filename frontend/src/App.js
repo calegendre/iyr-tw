@@ -1,7 +1,15 @@
-import { useEffect, useState, createContext } from "react";
+import { useEffect, useState, createContext, useRef } from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
 import axios from "axios";
+import MediaPlayer from "./components/MediaPlayer";
+import {
+  mockArtists,
+  mockTracks,
+  mockAlbums,
+  mockPodcasts,
+  mockBlogPosts
+} from "./mockData";
 
 // Context for authentication
 export const AuthContext = createContext();
