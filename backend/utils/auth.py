@@ -5,10 +5,16 @@ from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
+import os
+import sys
+from pathlib import Path
 
-from ..database import get_db
-from ..models import User
-from ..schemas import TokenData
+# Add the parent directory to the path so we can import from the parent package
+backend_dir = Path(__file__).resolve().parent.parent
+sys.path.append(str(backend_dir))
+
+from database import get_db
+from models.models import User
 
 # Secret key for JWT
 SECRET_KEY = "your_secret_key"  # This should be loaded from environment variables in production
@@ -19,7 +25,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # OAuth2 setup
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/token")
 
 # Verify password
 def verify_password(plain_password, hashed_password):
@@ -61,10 +67,10 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception
-        token_data = TokenData(email=email)
+        token_data = {"email": email}
     except JWTError:
         raise credentials_exception
-    user = db.query(User).filter(User.email == token_data.email).first()
+    user = db.query(User).filter(User.email == email).first()
     if user is None:
         raise credentials_exception
     return user
