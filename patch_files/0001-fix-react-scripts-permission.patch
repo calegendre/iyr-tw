@@ -1,0 +1,35 @@
+From: Developer <dev@example.com>
+Date: Tue, 13 May 2025 01:30:00 +0000
+Subject: [PATCH] Fix: Resolve react-scripts permission issue for deployment
+
+This patch fixes the issue with react-scripts permission denied error
+during deployment by modifying the build script in package.json to use
+node directly.
+
+Additionally, it updates the BrowserRouter import in App.js to use
+react-router-dom instead of react-router.
+
+diff --git a/frontend/package.json b/frontend/package.json
+index 123456..789012 100644
+--- a/frontend/package.json
++++ b/frontend/package.json
+@@ -4,7 +4,7 @@
+   "private": true,
+   "scripts": {
+     "start": "react-scripts start",
+-    "build": "react-scripts build",
++    "build": "node node_modules/react-scripts/bin/react-scripts.js build",
+     "test": "react-scripts test",
+     "eject": "react-scripts eject"
+   },
+
+diff --git a/frontend/src/App.js b/frontend/src/App.js
+index abcdef..123456 100644
+--- a/frontend/src/App.js
++++ b/frontend/src/App.js
+@@ -1,4 +1,4 @@
+-import { BrowserRouter, Routes, Route } from "react-router";
++import { BrowserRouter, Routes, Route } from "react-router-dom";
+ import axios from "axios";
+
+ // Rest of the file remains unchanged
